@@ -13,10 +13,7 @@ export const databaseConfig = (configService: ConfigService) => ({
   migrations: [],
   synchronize: configService.get('NODE_ENV') === 'development',
   logging: configService.get('NODE_ENV') === 'development',
-  ssl:
-    configService.get('NODE_ENV') === 'production'
-      ? { rejectUnauthorized: false }
-      : false,
+  ssl: false,
 });
 
 export const AppDataSource = new DataSource({
@@ -30,4 +27,5 @@ export const AppDataSource = new DataSource({
   migrations: [],
   synchronize: process.env.NODE_ENV === 'development',
   logging: process.env.NODE_ENV === 'development',
+  ssl: false,
 });
