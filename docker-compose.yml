@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: komfortel_postgres
+    environment:
+      POSTGRES_DB: komfortel_api
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - komfortel_network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: komfortel_api
+    environment:
+      NODE_ENV: production
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: password
+      DB_DATABASE: komfortel_api
+      PORT: 3000
+    ports:
+      - '3000:3000'
+    depends_on:
+      - postgres
+    volumes:
+      - ./uploads:/app/uploads
+    networks:
+      - komfortel_network
+
+volumes:
+  postgres_data:
+
+networks:
+  komfortel_network:
+    driver: bridge

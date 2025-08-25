@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: komfortel_postgres_dev
+    environment:
+      POSTGRES_DB: komfortel_api
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    networks:
+      - komfortel_network_dev
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: komfortel_api_dev
+    environment:
+      NODE_ENV: development
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: password
+      DB_DATABASE: komfortel_api
+      PORT: 3000
+    ports:
+      - '3000:3000'
+    depends_on:
+      - postgres
+    volumes:
+      - ./uploads:/app/uploads
+      - ./src:/app/src
+    networks:
+      - komfortel_network_dev
+    command: npm run start:dev
+
+volumes:
+  postgres_data_dev:
+
+networks:
+  komfortel_network_dev:
+    driver: bridge
